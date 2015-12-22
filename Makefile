@@ -20,7 +20,7 @@
 ## <http://www.gnu.org/licenses/>.
 
 CXXFLAGS=-Wall -Wconversion -Wcast-qual -Wextra -Wshadow -Werror -pedantic -pedantic-errors -fmessage-length=0 -fPIC
-CPPFLAGS=-std=c++11 -I.
+CPPFLAGS=-std=c++11 -I. -MMD -MP
 LDFLAGS=
 ARFLAGS=
 LDLIBS=
@@ -82,7 +82,7 @@ mdistdir:=$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
 
-NONDEPGOALS=clean depclean realclean distclean install uninstall dep $(CTAGSFILE) $(ETAGSFILE)
+NONDEPGOALS=clean depclean realclean distclean install uninstall
 
 all: lib
 
@@ -108,8 +108,6 @@ uninstall:
 	-$(RM) $(addprefix $(incdir)/,$(BASEHEADERS))
 	-$(RM) -r $(incdir)/$(INCLUDEDIR)
 	-$(RM) $(libdir)/$(ARCHIVE) $(libdir)/$(LIBRARY)
-
-dep: $(DEPS)
 
 lib: $(ARCHIVE) $(LIBRARY)
 
@@ -152,9 +150,6 @@ endif
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
-$(BUILDDIR)/%.d: $(SOURCEDIR)/%.cpp
-	$(CXX) $(CPPFLAGS) -MMD -MF $@ -MT $@ -MT $(<:$(SOURCEDIR)/%.cpp=$(BUILDDIR)/%.o) -E $< > $(DEVNULL)
-
-.PHONY:	all clean depclean realclean distclean install uninstall dep lib distribution
+.PHONY:	all clean depclean realclean distclean install uninstall lib distribution
 
 .NOEXPORT:
