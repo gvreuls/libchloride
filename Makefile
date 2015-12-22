@@ -114,12 +114,10 @@ lib: $(ARCHIVE) $(LIBRARY)
 distribution: $(distribution)
 
 #.NOTPARALLEL:
-#$(ARCHIVE): $(ARCHIVE)($(OBJECTS))
+#$(ARCHIVE)($(OBJECTS)): $(OBJECTS)
 
 $(ARCHIVE): $(OBJECTS)
 	$(AR) $(ARFLAGS) -cr $@ $^
-
-$(ARCHIVE)($(OBJECTS)): $(OBJECTS)
 
 $(LIBRARY): $(OBJECTS)
 	$(CXX) -shared -o $@ $^
