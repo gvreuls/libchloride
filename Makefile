@@ -78,7 +78,7 @@ version_minor=1
 version_revision=0
 version:=$(version_major).$(version_minor).$(version_revision)
 
-mdistdir:=$(TARGETNAME)-$(version)
+mdistdir:=lib$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
 
