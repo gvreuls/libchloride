@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOPUBLICKEY_H_
-#define CRYPTOPUBLICKEY_H_
+#ifndef CHLORIDE_CRYPTOPUBLICKEY_H_
+#define CHLORIDE_CRYPTOPUBLICKEY_H_
 
 #include <sodium/crypto_sign_ed25519.h>
 #include <sodium/crypto_box_curve25519xsalsa20poly1305.h>
@@ -150,6 +150,6 @@ public:
 
 } // namespace Crypto
 
-#endif /* CRYPTOPUBLICKEY_H_ */
+#endif /* CHLORIDE_CRYPTOPUBLICKEY_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

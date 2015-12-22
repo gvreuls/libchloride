@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOMEMORY_H_
-#define CRYPTOMEMORY_H_
+#ifndef CHLORIDE_CRYPTOMEMORY_H_
+#define CHLORIDE_CRYPTOMEMORY_H_
 
 #include <new>
 #include <memory>
@@ -95,6 +95,6 @@ template <Access A, typename T, typename D> inline void access(std::unique_ptr<T
 } // namespace Memory
 } //namespace Crypto
 
-#endif /* CRYPTOMEMORY_H_ */
+#endif /* CHLORIDE_CRYPTOMEMORY_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

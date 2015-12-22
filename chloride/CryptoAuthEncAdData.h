@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOAUTHENCADDATA_H_
-#define CRYPTOAUTHENCADDATA_H_
+#ifndef CHLORIDE_CRYPTOAUTHENCADDATA_H_
+#define CHLORIDE_CRYPTOAUTHENCADDATA_H_
 
 #include <sodium/crypto_aead_aes256gcm.h>
 #include <sodium/crypto_aead_chacha20poly1305.h>
@@ -326,6 +326,6 @@ inline bool Operation_AuthEncAdDataAes256Gcm_Available() noexcept
 
 } // namespace Crypto
 
-#endif /* CRYPTOAUTHENCADDATA_H_ */
+#endif /* CHLORIDE_CRYPTOAUTHENCADDATA_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOSTREAM_H_
-#define CRYPTOSTREAM_H_
+#ifndef CHLORIDE_CRYPTOSTREAM_H_
+#define CHLORIDE_CRYPTOSTREAM_H_
 
 #include <sodium/crypto_stream_aes128ctr.h>
 #include <sodium/crypto_stream_salsa20.h>
@@ -231,6 +231,6 @@ private:
 
 } // namespace Crypto
 
-#endif /* CRYPTOSTREAM_H_ */
+#endif /* CHLORIDE_CRYPTOSTREAM_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

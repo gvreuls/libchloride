@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOBASE_H_
-#define CRYPTOBASE_H_
+#ifndef CHLORIDE_CRYPTOBASE_H_
+#define CHLORIDE_CRYPTOBASE_H_
 
 #include <sodium/version.h>
 #if (SODIUM_LIBRARY_VERSION_MAJOR) < 7 || ((SODIUM_LIBRARY_VERSION_MAJOR) == 7 && (SODIUM_LIBRARY_VERSION_MINOR) < 6)
@@ -113,6 +113,6 @@ inline void init()
 
 } // namespace Crypto
 
-#endif /* CRYPTOBASE_H_ */
+#endif /* CHLORIDE_CRYPTOBASE_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

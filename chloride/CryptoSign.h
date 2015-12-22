@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOSIGN_H_
-#define CRYPTOSIGN_H_
+#ifndef CHLORIDE_CRYPTOSIGN_H_
+#define CHLORIDE_CRYPTOSIGN_H_
 
 #include <sodium/crypto_sign_ed25519.h>
 
@@ -152,6 +152,6 @@ inline void convertKeyPair(const KeyPair<Operation::SignEd25519>& signKeys_,
 
 } // namespace Crypto
 
-#endif /* CRYPTOSIGN_H_ */
+#endif /* CHLORIDE_CRYPTOSIGN_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

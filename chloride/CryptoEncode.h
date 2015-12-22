@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOENCODE_H_
-#define CRYPTOENCODE_H_
+#ifndef CHLORIDE_CRYPTOENCODE_H_
+#define CHLORIDE_CRYPTOENCODE_H_
 
 #include <algorithm>
 
@@ -211,6 +211,6 @@ template <std::size_t S> std::string smartZ85ToBin(const std::string& s_)
 } // namespace Encode
 } // namespace Crypto
 
-#endif /* CRYPTOENCODE_H_ */
+#endif /* CHLORIDE_CRYPTOENCODE_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

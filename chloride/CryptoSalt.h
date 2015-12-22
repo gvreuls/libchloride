@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOSALT_H_
-#define CRYPTOSALT_H_
+#ifndef CHLORIDE_CRYPTOSALT_H_
+#define CHLORIDE_CRYPTOSALT_H_
 
 #include <sodium/randombytes.h>
 
@@ -69,6 +69,6 @@ private:
 
 } // namespace Crypto
 
-#endif /* CRYPTOSALT_H_ */
+#endif /* CHLORIDE_CRYPTOSALT_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

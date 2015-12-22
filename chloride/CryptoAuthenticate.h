@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOAUTHENTICATE_H_
-#define CRYPTOAUTHENTICATE_H_
+#ifndef CHLORIDE_CRYPTOAUTHENTICATE_H_
+#define CHLORIDE_CRYPTOAUTHENTICATE_H_
 
 #include <sodium/crypto_auth_hmacsha256.h>
 #include <sodium/crypto_auth_hmacsha512.h>
@@ -453,6 +453,6 @@ public:
 
 } // namespace Crypto
 
-#endif /* CRYPTOAUTHENTICATE_H_ */
+#endif /* CHLORIDE_CRYPTOAUTHENTICATE_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

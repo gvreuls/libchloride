@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOBOX_H_
-#define CRYPTOBOX_H_
+#ifndef CHLORIDE_CRYPTOBOX_H_
+#define CHLORIDE_CRYPTOBOX_H_
 
 #include <sodium/crypto_box_curve25519xsalsa20poly1305.h>
 #include <sodium/crypto_secretbox_xsalsa20poly1305.h>
@@ -252,6 +252,6 @@ public:
 
 } // namespace Crypto
 
-#endif /* CRYPTOBOX_H_ */
+#endif /* CHLORIDE_CRYPTOBOX_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOSECRETKEY_H_
-#define CRYPTOSECRETKEY_H_
+#ifndef CHLORIDE_CRYPTOSECRETKEY_H_
+#define CHLORIDE_CRYPTOSECRETKEY_H_
 
 #include "CryptoSeed.h"
 
@@ -165,6 +165,6 @@ public:
 
 } // namespace Crypto
 
-#endif /* CRYPTOSECRETKEY_H_ */
+#endif /* CHLORIDE_CRYPTOSECRETKEY_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

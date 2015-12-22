@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOHASH_H_
-#define CRYPTOHASH_H_
+#ifndef CHLORIDE_CRYPTOHASH_H_
+#define CHLORIDE_CRYPTOHASH_H_
 
 #include <sodium/crypto_hash_sha256.h>
 #include <sodium/crypto_hash_sha512.h>
@@ -475,6 +475,6 @@ public:
 
 } // namespace Crypto
 
-#endif /* CRYPTOHASH_H_ */
+#endif /* CHLORIDE_CRYPTOHASH_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

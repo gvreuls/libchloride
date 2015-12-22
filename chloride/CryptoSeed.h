@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTOSEED_H_
-#define CRYPTOSEED_H_
+#ifndef CHLORIDE_CRYPTOSEED_H_
+#define CHLORIDE_CRYPTOSEED_H_
 
 #include <sodium/randombytes.h>
 
@@ -69,6 +69,6 @@ private:
 
 } // namespace Crypto
 
-#endif /* CRYPTOSEED_H_ */
+#endif /* CHLORIDE_CRYPTOSEED_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */

@@ -5,8 +5,8 @@
 **      Author: gv
 */
 
-#ifndef CRYPTODIFFIEHELLMAN_H_
-#define CRYPTODIFFIEHELLMAN_H_
+#ifndef CHLORIDE_CRYPTODIFFIEHELLMAN_H_
+#define CHLORIDE_CRYPTODIFFIEHELLMAN_H_
 
 #include <sodium/crypto_scalarmult_curve25519.h>
 #include <sodium/crypto_generichash_blake2b.h>
@@ -96,6 +96,6 @@ private:
 
 } // namespace Crypto
 
-#endif /* CRYPTODIFFIEHELLMAN_H_ */
+#endif /* CHLORIDE_CRYPTODIFFIEHELLMAN_H_ */
 
 /* vi:set nojs noet ts=8 sts=4 sw=4 cindent: */
