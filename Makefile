@@ -6,7 +6,7 @@ CXXFLAGS=-Wall -Wconversion -Wcast-qual -Wextra -Wshadow -Werror -pedantic -peda
 CPPFLAGS=-std=c++11 -I.
 LDFLAGS=
 ARFLAGS=
-LIBS=
+LDLIBS=
 TAGSFLAGS=
 
 ifdef DEBUG
@@ -42,7 +42,7 @@ HEADERS:=$(BASEHEADERS) $(SUBHEADERS)
 SOURCES:=$(wildcard $(SOURCEDIR)/*.cpp)
 OBJECTS:=$(SOURCES:$(SOURCEDIR)/%.cpp=$(BUILDDIR)/%.o)
 DEPS:=$(OBJECTS:.o=.d)
-AUXFILES=Makefile
+AUXFILES=Makefile example.cpp
 
 CTAGSFILE=tags
 ETAGSFILE=TAGS
@@ -65,9 +65,9 @@ mdistdir:=$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
 
-NONDEPGOALS=clean depclean realclean distclean install uninstall dep $(DEPS) $(CTAGSFILE) $(ETAGSFILE)
+NONDEPGOALS=clean depclean realclean distclean install uninstall dep $(CTAGSFILE) $(ETAGSFILE)
 
-all: libs
+all: lib
 
 clean:
 	-$(RM) $(ARCHIVE) $(LIBRARY) $(OBJECTS)
@@ -94,11 +94,13 @@ uninstall:
 
 dep: $(DEPS)
 
-libs: $(ARCHIVE) $(LIBRARY)
+lib: $(ARCHIVE) $(LIBRARY)
 
 distribution: $(distribution)
 
+#.NOTPARALLEL:
 #$(ARCHIVE): $(ARCHIVE)($(OBJECTS))
+
 $(ARCHIVE): $(OBJECTS)
 	$(AR) $(ARFLAGS) -cr $@ $^
 
@@ -119,6 +121,9 @@ $(distribution): $(distfiles)
 	$(TAR) -czf $(distribution) $(mdistdir)/*
 	$(RM) -rf $(mdistdir)
 
+example: example.cpp $(ARCHIVE)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $< -lsodium $(ARCHIVE)
+
 ifdef MAKECMDGOALS
 ifneq ($(filter-out $(NONDEPGOALS),$(MAKECMDGOALS)),)
 -include $(DEPS)
@@ -133,8 +138,6 @@ $(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp
 $(BUILDDIR)/%.d: $(SOURCEDIR)/%.cpp
 	$(CXX) $(CPPFLAGS) -MMD -MF $@ -MT $@ -MT $(<:$(SOURCEDIR)/%.cpp=$(BUILDDIR)/%.o) -E $< > $(DEVNULL)
 
-.NOTPARALLEL:
-
-.PHONY:	all clean depclean realclean distclean install uninstall dep libs distribution
+.PHONY:	all clean depclean realclean distclean install uninstall dep lib distribution
 
 .NOEXPORT:
