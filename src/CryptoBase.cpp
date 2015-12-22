@@ -7,8 +7,6 @@
 
 #include "chloride/CryptoBase.h"
 
-#define TOSTRING(text)	#text
-
 namespace Crypto {
 
 const std::string	Exception::InitMsg		{ "crypto can\'t initialize libsodium!" };

@@ -31,7 +31,6 @@ INSTALL=install -c
 CTAGS=ctags
 ETAGS=etags
 DEVNULL=/dev/null
-CD=cd
 
 TARGETNAME=chloride
 INCLUDEDIR=$(TARGETNAME)
