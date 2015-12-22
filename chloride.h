@@ -9,7 +9,6 @@
 #define CHLORIDE_H_
 
 #include "chloride/CryptoSign.h"
-#include "chloride/CryptoBox.h"
 #include "chloride/CryptoDiffieHellman.h"
 #include "chloride/CryptoStream.h"
 #include "chloride/CryptoHash.h"
