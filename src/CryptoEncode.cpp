@@ -5,7 +5,7 @@
 **      Author: gv
 */
 
-#include "../chloride/CryptoEncode.h"
+#include "chloride/CryptoEncode.h"
 
 namespace Crypto {
 namespace Encode {
