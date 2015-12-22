@@ -27,7 +27,7 @@ LDLIBS=
 TAGSFLAGS=
 
 ifdef DEBUG
-	override CXXFLAGS+=-g
+	override CXXFLAGS+=-g3
 	override CPPFLAGS+=-DDEBUG=$(DEBUG)
 	override TAGSFLAGS+=-I DEBUG=$(DEBUG)
 	BUILDDIR=Debug
@@ -82,7 +82,7 @@ mdistdir:=lib$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
 
-NONDEPGOALS=clean depclean realclean distclean install uninstall
+NONDEPGOALS=clean depclean realclean distclean install uninstall exampleclean
 
 all: lib
 
@@ -137,6 +137,9 @@ $(distribution): $(distfiles)
 example: example.cpp $(ARCHIVE)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $< -lsodium $(ARCHIVE)
 
+exampleclean:
+	-$(RM) example example.d
+
 ifdef MAKECMDGOALS
 ifneq ($(filter-out $(NONDEPGOALS),$(MAKECMDGOALS)),)
 -include $(DEPS)
@@ -148,6 +151,6 @@ endif
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
-.PHONY:	all clean depclean realclean distclean install uninstall lib distribution
+.PHONY:	all clean depclean realclean distclean install uninstall lib distribution exampleclean
 
 .NOEXPORT:
