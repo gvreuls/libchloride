@@ -155,7 +155,7 @@ public:
     {
 	const bool publicUnequal { publicKey != kp_.publicKey };
 	const bool secretUnequal { secretKey != kp_.secretKey };
-	return publicUnequal && secretUnequal;
+	return publicUnequal || secretUnequal;
     }
 
     void clear() noexcept
