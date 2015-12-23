@@ -135,7 +135,7 @@ $(distribution): $(distfiles)
 	$(RM) -rf $(mdistdir)
 
 example: example.cpp $(ARCHIVE)
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $< -lsodium $(ARCHIVE)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ -lsodium
 
 exampleclean:
 	-$(RM) example example.d
