@@ -1,0 +1,42 @@
+Libchloride is a C++ wrapper for libsodium. Libsodium is a portable
+implementation of Daniel Bernstein's cryptographic NaCl (pronounced
+'salt') library.
+
+Libchloride was written in standard C++11 to be portable, even tough
+only the *NIX build system (make) is supported for now. 
+
+INSTALLATION
+
+To install a release version of the library, change into the project's
+root directory (containing the Makefile) and enter:
+make
+Acquire root privileges and enter:
+make install
+
+To install a debug version of the library, repeat the above steps with
+the DEBUG variable declared in the environment, for instance:
+make DEBUG=1
+make install DEBUG=1
+
+USAGE
+
+Include the header file chloride.h in your source code and link your
+executables with -lchloride or -lchloride-debug (and -lsodium).
+
+There is an example.cpp source file include in the project package
+which demonstrates the library's core features. You can compile this
+example with:
+make example DEBUG=1
+(You don't have to install the library to compile the example.)
+
+NOTES
+
+Libchloride was originally inspired by Ruben De Visscher's sodiumpp and
+provides a form of Z85 encoding, which libsodium doesn't. Please note
+that libchloride's form of Z85 encoding is incompatible with sodiumpp's
+because the latter uses an inefficient padding method.
+
+LICENSE
+
+Libchloride is licensed under the the GNU Lesser General Public License
+version 2.1. A copy of the license text is included the project package.
