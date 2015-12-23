@@ -39,4 +39,5 @@ because the latter uses an inefficient padding method.
 LICENSE
 
 Libchloride is licensed under the the GNU Lesser General Public License
-version 2.1. A copy of the license text is included the project package.
+version 2.1. A copy of the license text is included in the project
+package.
