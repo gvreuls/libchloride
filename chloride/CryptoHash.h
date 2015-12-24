@@ -441,6 +441,7 @@ public:
 	 std::size_t opsLimit_ = DefaultOpsLimit, std::size_t memLimit_ = DefaultMemLimit)
 	: Hash<Oper>(&pw_[0], pw_.length(), opsLimit_, memLimit_)
     {
+	::sodium_memzero(&pw_[0], pw_.length());
 	pw_.clear();
     }
 
@@ -456,6 +457,7 @@ public:
     void operator () (std::string& pw_) const
     {
 	operator()(&pw_[0], pw_.length());
+	::sodium_memzero(&pw_[0], pw_.length());
 	pw_.clear();
     }
 };
@@ -490,6 +492,7 @@ public:
 	      std::size_t opsLimit_ = DefaultOpsLimit, std::size_t memLimit_ = DefaultMemLimit)
 	: SizedHash<Oper, Size>(st_, &pw_[0], pw_.length(), opsLimit_, memLimit_)
     {
+	::sodium_memzero(&pw_[0], pw_.length());
 	pw_.clear();
     }
 };
