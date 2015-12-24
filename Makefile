@@ -87,16 +87,18 @@ nondistfiles:=$(INCLUDEDIR)/.gitignore $(VERSIONHEADER)
 
 NONDEPGOALS=clean depclean realclean distclean install uninstall exampleclean
 
-all: lib
+lib: $(ARCHIVE) $(LIBRARY)
+
+all: lib example
 
 clean:
-	-$(RM) $(ARCHIVE) $(LIBRARY) $(OBJECTS) $(VERSIONHEADER) example
+	-$(RM) $(ARCHIVE) $(LIBRARY) $(OBJECTS) example
 
 depclean: clean
 	-$(RM) $(DEPS)
 
 realclean: depclean
-	-$(RM) $(CTAGSFILE) $(ETAGSFILE)
+	-$(RM) $(CTAGSFILE) $(ETAGSFILE) $(VERSIONHEADER)
 
 distclean: realclean
 	-$(RM) $(distribution)
@@ -111,8 +113,6 @@ uninstall:
 	-$(RM) $(addprefix $(incdir)/,$(BASEHEADERS))
 	-$(RM) -r $(incdir)/$(INCLUDEDIR)
 	-$(RM) $(libdir)/$(ARCHIVE) $(libdir)/$(LIBRARY)
-
-lib: $(ARCHIVE) $(LIBRARY)
 
 distribution: $(distribution)
 
