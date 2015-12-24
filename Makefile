@@ -55,6 +55,7 @@ SOURCEDIR=src
 
 BASEHEADERS:=$(wildcard *.h)
 SUBHEADERS:=$(wildcard $(INCLUDEDIR)/Crypto*.h)
+VERSIONHEADER:=$(INCLUDEDIR)/version.h
 HEADERS:=$(BASEHEADERS) $(SUBHEADERS)
 SOURCES:=$(wildcard $(SOURCEDIR)/*.cpp)
 OBJECTS:=$(SOURCES:$(SOURCEDIR)/%.cpp=$(BUILDDIR)/%.o)
@@ -77,8 +78,6 @@ version_major=0
 version_minor=1
 version_revision=0
 version:=$(version_major).$(version_minor).$(version_revision)
-
-VERSIONHEADER:=$(INCLUDEDIR)/version.h
 
 mdistdir:=lib$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
