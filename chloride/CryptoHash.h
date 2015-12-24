@@ -453,7 +453,11 @@ public:
     }
     void operator () (const char* pwBegin_, const char* pwEnd_)	const
 							{ operator()(pwBegin_, static_cast<std::size_t>(pwEnd_ - pwBegin_)); }
-    void operator () (const std::string& pw_) const	{ operator()(&pw_[0], pw_.length()); }
+    void operator () (std::string& pw_) const
+    {
+	operator()(&pw_[0], pw_.length());
+	pw_.clear();
+    }
 };
 
 template <std::size_t S> class SizedHash<Operation::PwHashScryptSalsa208Sha256, S>: public HashBase<S> {
