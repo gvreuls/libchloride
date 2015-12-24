@@ -184,7 +184,7 @@ void z85ToBin(const char* inP_, std::size_t inN_, unsigned char* outP_, std::siz
 	Z85::decode_tuple(inP_, outP_);
     unsigned char tuple[4];
     Z85::decode_tuple(inP_, tuple);
-    std::size_t padSize { static_cast<std::size_t>(tuple[3] - '0') };
+    const std::size_t padSize { static_cast<std::size_t>(tuple[3] - '0') };
     if((outSize - padSize) != outN_)
 	throw Exception(Exception::SizeMsg);
     if(padSize < 4)
@@ -192,18 +192,17 @@ void z85ToBin(const char* inP_, std::size_t inN_, unsigned char* outP_, std::siz
 }
 void z85ToBin(const char* inBegin_, const char* inEnd_, unsigned char* outBegin_, unsigned char* outEnd_)
 {
-    std::size_t inN { static_cast<std::size_t>(inEnd_ - inBegin_) };
+    const std::size_t inN { static_cast<std::size_t>(inEnd_ - inBegin_) };
     const std::size_t outN { static_cast<std::size_t>(outEnd_ - outBegin_) };
     const std::size_t outSize { safeZ85StringToBinSize(inN) };
     if(!isSafeZ85StringSize(inN) || (outSize - 4) > outN)
 	throw Exception(Exception::SizeMsg);
-    inN-= 5;
     inEnd_-= 5;
     for(; inBegin_ < inEnd_; inBegin_+= 5, outBegin_+= 4)
 	Z85::decode_tuple(inBegin_, outBegin_);
     unsigned char tuple[4];
     Z85::decode_tuple(inBegin_, tuple);
-    std::size_t padSize { static_cast<std::size_t>(tuple[3] - '0') };
+    const std::size_t padSize { static_cast<std::size_t>(tuple[3] - '0') };
     if((outSize - padSize) != outN)
 	throw Exception(Exception::SizeMsg);
     if(padSize < 4)
