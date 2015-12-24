@@ -178,7 +178,7 @@ int main(int, char* argv[])
 	Crypto::Memory::access<Crypto::Memory::Access::None>(password);
 	std::cout << '\"' << pw << "\" -> " << std::flush;
 	Crypto::Hash<Crypto::Operation::PwHash> 	checkPassword { pw };
-	std::cout << "#\"" << checkPassword << '\"'<< std::endl;
+	std::cout << "#\"" << checkPassword << '\"' << std::endl;
 	Crypto::Memory::access<Crypto::Memory::Access::Read>(password);
 	pw= password.get();
 	Crypto::Memory::access<Crypto::Memory::Access::None>(password);

@@ -45,6 +45,7 @@ TAR=tar
 MKDIR=mkdir
 STRIP=strip
 INSTALL=install -c
+ECHO=echo
 CTAGS=ctags
 ETAGS=etags
 DEVNULL=/dev/null
@@ -82,6 +83,7 @@ version:=$(version_major).$(version_minor).$(version_revision)
 mdistdir:=lib$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
+nondistfiles:=$(INCLUDEDIR)/.gitignore $(VERSIONHEADER)
 
 NONDEPGOALS=clean depclean realclean distclean install uninstall exampleclean
 
@@ -115,18 +117,18 @@ lib: $(ARCHIVE) $(LIBRARY)
 distribution: $(distribution)
 
 $(VERSIONHEADER): Makefile
-	@echo "generating $@"
-	@echo "/* Automatically generated header file, do not edit. */" > $@
-	@echo "" >> $@
-	@echo "#ifndef CHLORIDE_VERSION_H_" >> $@
-	@echo "#define CHLORIDE_VERSION_H_" >> $@
-	@echo "" >> $@
-	@echo "#define CHLORIDE_VERSION_MAJOR		$(version_major)" >> $@
-	@echo "#define CHLORIDE_VERSION_MINOR		$(version_minor)" >> $@
-	@echo "#define CHLORIDE_VERSION_REVISION	$(version_revision)" >> $@
-	@echo "" >> $@
-	@echo "#endif /* CHLORIDE_VERSION_H_ */" >> $@
-	@echo "" >> $@
+	@$(ECHO) "generating $@"
+	@$(ECHO) "/* Automatically generated header file, do not edit. */" > $@
+	@$(ECHO) "" >> $@
+	@$(ECHO) "#ifndef CHLORIDE_VERSION_H_" >> $@
+	@$(ECHO) "#define CHLORIDE_VERSION_H_" >> $@
+	@$(ECHO) "" >> $@
+	@$(ECHO) "#define CHLORIDE_VERSION_MAJOR		$(version_major)" >> $@
+	@$(ECHO) "#define CHLORIDE_VERSION_MINOR		$(version_minor)" >> $@
+	@$(ECHO) "#define CHLORIDE_VERSION_REVISION	$(version_revision)" >> $@
+	@$(ECHO) "" >> $@
+	@$(ECHO) "#endif /* CHLORIDE_VERSION_H_ */" >> $@
+	@$(ECHO) "" >> $@
 
 #.NOTPARALLEL:
 #$(ARCHIVE)($(OBJECTS)): $(OBJECTS)
@@ -146,6 +148,7 @@ $(ETAGSFILE): $(HEADERS) $(SOURCES)
 $(distribution): $(distfiles)
 	-$(MKDIR) $(mdistdir)
 	$(CP) -r $(distfiles) $(mdistdir)
+	-$(RM) $(addprefix $(mdistdir)/,$(nondistfiles))
 	$(TAR) -czf $(distribution) $(mdistdir)/*
 	$(RM) -rf $(mdistdir)
 
