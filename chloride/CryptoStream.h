@@ -241,6 +241,8 @@ public:
 	}
     }
 
+    void forceUpdate() noexcept					{ _at= _bytes + Size; }
+
 private:
     char*						_at;
     char						_bytes[Size];
