@@ -25,15 +25,17 @@
 #ifndef CHLORIDE_CRYPTOBASE_H_
 #define CHLORIDE_CRYPTOBASE_H_
 
-#define CHLORIDE_VERSION		"0.1.0"
-#define CHLORIDE_VERSION_MAJOR		0
-#define CHLORIDE_VERSION_MINOR		1
-#define CHLORIDE_VERSION_REVISION	0
 
 #include <sodium/version.h>
 #if (SODIUM_LIBRARY_VERSION_MAJOR) < 7 || ((SODIUM_LIBRARY_VERSION_MAJOR) == 7 && (SODIUM_LIBRARY_VERSION_MINOR) < 6)
 #error Chloride needs libsodium >= 7.6
 #endif
+
+#include "version.h"
+#define CHLORIDE_QUOTE(name)		#name
+#define CHLORIDE_STRINGIFY(macro)	CHLORIDE_QUOTE(macro)
+#define CHLORIDE_VERSION		CHLORIDE_STRINGIFY(CHLORIDE_VERSION_MAJOR.CHLORIDE_VERSION_MINOR.CHLORIDE_VERSION_REVISION)
+
 #include <sodium/core.h>
 #include <sodium/utils.h>
 

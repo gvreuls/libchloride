@@ -31,6 +31,7 @@ int main(int, char* argv[])
 {
     try {
 	Crypto::init();
+	std::cout << "Demonstrating libchloride v" << CHLORIDE_VERSION << '\n';
 
 	// Authentication.
 	std::string text { "This is but a small demonstration of the Crypto interface." };

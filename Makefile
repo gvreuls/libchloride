@@ -19,8 +19,8 @@
 ## License along with libchloride.  If not, see
 ## <http://www.gnu.org/licenses/>.
 
-CXXFLAGS=-Wall -Wconversion -Wcast-qual -Wextra -Wshadow -Werror -pedantic -pedantic-errors -fmessage-length=0 -fPIC
-CPPFLAGS=-std=c++11 -I. -MMD -MP
+CXXFLAGS=-Wall -Wconversion -Wcast-qual -Wextra -Wshadow -Werror -pedantic -pedantic-errors -fmessage-length=0
+CPPFLAGS=-std=c++11 -I.
 LDFLAGS=
 ARFLAGS=
 LDLIBS=
@@ -54,7 +54,7 @@ INCLUDEDIR=$(TARGETNAME)
 SOURCEDIR=src
 
 BASEHEADERS:=$(wildcard *.h)
-SUBHEADERS:=$(wildcard $(INCLUDEDIR)/*.h)
+SUBHEADERS:=$(wildcard $(INCLUDEDIR)/Crypto*.h)
 HEADERS:=$(BASEHEADERS) $(SUBHEADERS)
 SOURCES:=$(wildcard $(SOURCEDIR)/*.cpp)
 OBJECTS:=$(SOURCES:$(SOURCEDIR)/%.cpp=$(BUILDDIR)/%.o)
@@ -78,6 +78,8 @@ version_minor=1
 version_revision=0
 version:=$(version_major).$(version_minor).$(version_revision)
 
+VERSIONHEADER:=$(INCLUDEDIR)/version.h
+
 mdistdir:=lib$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
@@ -87,7 +89,7 @@ NONDEPGOALS=clean depclean realclean distclean install uninstall exampleclean
 all: lib
 
 clean:
-	-$(RM) $(ARCHIVE) $(LIBRARY) $(OBJECTS)
+	-$(RM) $(ARCHIVE) $(LIBRARY) $(OBJECTS) $(VERSIONHEADER) example
 
 depclean: clean
 	-$(RM) $(DEPS)
@@ -113,6 +115,20 @@ lib: $(ARCHIVE) $(LIBRARY)
 
 distribution: $(distribution)
 
+$(VERSIONHEADER): Makefile
+	@echo "generating $@"
+	@echo "/* Automatically generated header file, do not edit. */" > $@
+	@echo "" >> $@
+	@echo "#ifndef CHLORIDE_VERSION_H_" >> $@
+	@echo "#define CHLORIDE_VERSION_H_" >> $@
+	@echo "" >> $@
+	@echo "#define CHLORIDE_VERSION_MAJOR		$(version_major)" >> $@
+	@echo "#define CHLORIDE_VERSION_MINOR		$(version_minor)" >> $@
+	@echo "#define CHLORIDE_VERSION_REVISION	$(version_revision)" >> $@
+	@echo "" >> $@
+	@echo "#endif /* CHLORIDE_VERSION_H_ */" >> $@
+	@echo "" >> $@
+
 #.NOTPARALLEL:
 #$(ARCHIVE)($(OBJECTS)): $(OBJECTS)
 
@@ -137,9 +153,6 @@ $(distribution): $(distfiles)
 example: example.cpp $(ARCHIVE)
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ -lsodium
 
-exampleclean:
-	-$(RM) example example.d
-
 ifdef MAKECMDGOALS
 ifneq ($(filter-out $(NONDEPGOALS),$(MAKECMDGOALS)),)
 -include $(DEPS)
@@ -148,7 +161,10 @@ else
 -include $(DEPS)
 endif
 
-$(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp
+%.o: override CPPFLAGS+=-MMD
+
+$(BUILDDIR)/%.o: override CXXFLAGS+=-fPIC
+$(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp $(VERSIONHEADER)
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 .PHONY:	all clean depclean realclean distclean install uninstall lib distribution exampleclean
