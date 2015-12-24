@@ -1,8 +1,8 @@
-.project
-.cproject
-.settings/
-Debug/
-Release/
-example
-example.d
-libchloride-*.tar.gz
+/.project
+/.cproject
+/.settings/
+/Debug/
+/Release/
+/example
+/libchloride-*/
+/libchloride-*.tar.gz
