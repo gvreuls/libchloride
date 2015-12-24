@@ -85,7 +85,7 @@ distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
 nondistfiles:=$(INCLUDEDIR)/.gitignore $(VERSIONHEADER)
 
-NONDEPGOALS=clean depclean realclean distclean install uninstall exampleclean
+NONDEPGOALS=clean depclean realclean distclean install uninstall
 
 lib: $(ARCHIVE) $(LIBRARY)
 
@@ -169,6 +169,6 @@ $(BUILDDIR)/%.o: override CXXFLAGS+=-fPIC
 $(BUILDDIR)/%.o: $(SOURCEDIR)/%.cpp $(VERSIONHEADER)
 	$(CXX) -c $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
-.PHONY:	all clean depclean realclean distclean install uninstall lib distribution exampleclean
+.PHONY:	lib all clean depclean realclean distclean install uninstall distribution
 
 .NOEXPORT:
