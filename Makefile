@@ -27,7 +27,7 @@ LDLIBS=
 TAGSFLAGS=
 
 ifdef DEBUG
-	override CXXFLAGS+=-g3
+	override CXXFLAGS+=-g3 -Og
 	override CPPFLAGS+=-DDEBUG=$(DEBUG)
 	override TAGSFLAGS+=-I DEBUG=$(DEBUG)
 	BUILDDIR=Debug

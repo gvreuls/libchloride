@@ -27,93 +27,174 @@
 
 #include <chloride.h>
 
+// Define shorthand aliases.
+typedef Crypto::Operation	COp;
+template <COp O> using		COpTraits =	Crypto::OperationTraits<O>;
+template <COp O> using 		CAuth =		Crypto::Authenticator<O>;
+template <COp O, std::size_t S =						COpTraits<O>::NonceDefaultSequentialSize>
+		 using		CAeadOpener =	Crypto::AuthEncAdDataOpener<O, S>;
+template <COp O, std::size_t S =						COpTraits<O>::NonceDefaultSequentialSize>
+		 using		CAeadSealer =	Crypto::AuthEncAdDataSealer<O, S>;
+template <COp O, std::size_t S = 						COpTraits<O>::NonceDefaultSequentialSize>
+		 using		CBoxOpener =	Crypto::BoxOpener<O, S>;
+template <COp O, std::size_t S = 						COpTraits<O>::NonceDefaultSequentialSize>
+		 using		CBoxSealer =	Crypto::BoxSealer<O, S>;
+template <COp O, std::size_t S = 						COpTraits<O>::SecretKeySize>
+		 using		CDifHel =	Crypto::DiffieHellman<O, S>;
+namespace			CEnc =		Crypto::Encode;
+template <COp O> using		CHash =		Crypto::Hash<O>;
+template <COp O> using		CKeyPair =	Crypto::KeyPair<O>;
+namespace			CMem =		Crypto::Memory;
+typedef CMem::Access		CMemAcc;
+template <COp O, std::size_t S = 						COpTraits<O>::NonceDefaultSequentialSize>
+		 using		CNonce =	Crypto::Nonce<O, S>;
+template <COp O> using		PubKey =	Crypto::PublicKey<O>;
+template <COp O> using 		CSalt =		Crypto::Salt<O>;
+template <COp O> using 		CSeed =		Crypto::Seed<O>;
+template <COp O> using 		CSecKey =	Crypto::SecretKey<O>;
+template <COp O> using 		CSign =		Crypto::Signature<O>;
+template <COp O, std::size_t S = 		Crypto::StreamerDefaultPadSize,
+		 std::size_t NSS =						COpTraits<O>::NonceDefaultSequentialSize>
+		 using		CStreamer =	Crypto::Streamer<O, S, NSS>;
+template <COp O, std::size_t S>
+		 using		CSzHash =	Crypto::SizedHash<O, S>;
+template <COp O, std::size_t S>
+		 using		CSzSecKey =	Crypto::SizedSecretKey<O, S>;
+namespace			CTag =		Crypto::Tag;
+
 int main(int, char* argv[])
 {
     try {
 	Crypto::init();
-	std::cout << "Demonstrating libchloride v" << CHLORIDE_VERSION << '\n';
+	std::cout << "Demonstrating libchloride v"
+		  << CHLORIDE_VERSION << '\n';
 
-	// Authentication.
-	std::string text { "This is but a small demonstration of the Crypto interface." };
-	Crypto::SecretKey<Crypto::Operation::Auth>	authKey { Crypto::Tag::Generate };
-	Crypto::Authenticator<Crypto::Operation::Auth>	authenticate { authKey, text };
-	std::cout << '\"' << text << "\" $> \"" << Crypto::Encode::binToZ85(authenticate.begin(), authenticate.end()) << "\"\n";
-	authenticate(authKey, text);
+	// Secret key authentication.
+	std::string 			text 		{ "This is but a small demonstration of the Crypto interface." };
+	CSecKey<COp::Auth>		authKey 	{ CTag::Generate };		// generate SecretKey
+	CAuth<COp::Auth>		authenticate 	{ authKey, text };		// authenticate text
+	std::cout << "Authenticating \"" << text << "\" -> \""
+		  << CEnc::binToZ85(authenticate.begin(),
+				    authenticate.end())
+		  << "\": ";
+	try {
+	    authenticate(authKey, text);						// verify authentication
+	    std::cout << "authentication succeeded.\n";
+	}
+	catch(Crypto::VerificationError&)
+	{
+	    std::cout << "authentication failed!\n";
+	    throw;
+	}
 	text+= '.';
 
-	// Signing.
-	Crypto::KeyPair<Crypto::Operation::Sign> 	signingKeys { Crypto::Tag::Generate };
-	std::cout << '\"' << text << "\" $$> ";
-	signSeal(signingKeys.secretKey, text);
-	std::cout << '\"' << Crypto::Encode::binToZ85(text) << "\" -> ";
-	signOpen(signingKeys.publicKey, text);
-	std::cout << '\"' << text << "\"\n";
-	Crypto::Signature<Crypto::Operation::Sign>	signature { signingKeys.secretKey, text };
-	signature(signingKeys.publicKey, text);
+	// Public key signing.
+	CKeyPair<COp::Sign> 		signingKeys 	{ CTag::Generate };		// generate KeyPair
+	std::cout << "Signing \"" << text << "\" -> ";
+	signSeal(signingKeys.secretKey, text);						// sign text
+	std::cout << '\"' << CEnc::binToZ85(text) << "\": ";
+	try {
+	    signOpen(signingKeys.publicKey, text);					// decrypt signed text.
+	    std::cout << "message authentic.\n";
+	}
+	catch(Crypto::VerificationError&)
+	{
+	    std::cout << "message forged!\n";
+	    throw;
+	}
+	std::cout << "Verifying signature: ";
+	CSign<COp::Sign>		signature	{ signingKeys.secretKey,
+							  text };			// stand-alone signature
+	try {
+	    signature(signingKeys.publicKey, text);					// check signature
+	    std::cout << "signature authentic.\n";
+	}
+	catch(Crypto::VerificationError&)
+	{
+	    std::cout << "signature forged!\n";
+	    throw;
+	}
 	text+= '.';
 
 	// Public key boxing/unboxing.
-	Crypto::KeyPair<Crypto::Operation::Box> 	sealKeys;
-	Crypto::convertKeyPair(signingKeys, sealKeys);
-	Crypto::KeyPair<Crypto::Operation::Box>		openKeys { Crypto::Tag::Generate };
-	Crypto::Nonce<Crypto::Operation::Box> 		sealNonce { Crypto::Tag::GenerateConstant };
-	Crypto::Nonce<Crypto::Operation::Box>		openNonce { sealNonce };
-	Crypto::BoxSealer<Crypto::Operation::Box>	boxSeal { openKeys.publicKey, sealKeys.secretKey, sealNonce };
-	Crypto::BoxOpener<Crypto::Operation::Box>	boxOpen { sealKeys.publicKey, openKeys.secretKey, openNonce };
-	std::cout << '\"' << text << "\" -> ";
-	std::string cypher { boxSeal(text) };
-	cypher= Crypto::Encode::binToZ85(cypher);
-	std::cout << '\"' << cypher << "\" -> ";
-	cypher= Crypto::Encode::z85ToBin(cypher);
-	text= boxOpen(cypher);
+	CKeyPair<COp::Box> 		sealKeys;
+	Crypto::convertKeyPair(signingKeys, sealKeys);					// convert sender KeyPair
+	CKeyPair<COp::Box>		openKeys 	{ CTag::Generate };		// generate receiver KeyPair
+	CNonce<COp::Box> 		sealNonce 	{ CTag::GenerateConstant };	// generate sender Nonce
+	CNonce<COp::Box>		openNonce 	{ sealNonce };			// copy sender Nonce to receiver
+	CBoxSealer<COp::Box>		boxSeal 	{ openKeys.publicKey,
+							  sealKeys.secretKey,
+							  sealNonce };			// sender boxer
+	CBoxOpener<COp::Box>		boxOpen 	{ sealKeys.publicKey,
+							  openKeys.secretKey,
+							  openNonce };			// receiver unboxer
+	std::cout << "Public boxing \""
+		  << text << "\" -> ";
+	std::string 			cypher		{ CEnc::binToZ85(boxSeal(text)) };	// sender box
+	std::cout << '\"' << cypher << "\"\n"
+		  << "Public unboxing \""
+		  << cypher << "\" -> ";
+	text= boxOpen(CEnc::z85ToBin(cypher));						// receiver unbox
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
 
 	// Secret key boxing/unboxing protected by secure password in read-only memory.
-	std::unique_ptr<char[], Crypto::Memory::Free>	password { new(Crypto::Memory::Allocate) char[Crypto::Memory::Alignment] };
-	std::strncpy(password.get(), "Correct Horse Battery Staple", Crypto::Memory::Alignment);
-	Crypto::Memory::access<Crypto::Memory::Access::Read>(password);
-	std::string pw { password.get() };
-	Crypto::Memory::access<Crypto::Memory::Access::None>(password);
-	Crypto::Salt<Crypto::Operation::PwHash>		secretPwSalt {
-	    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-	    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
+	std::unique_ptr<char[],CMem::Free>
+					password	{ new(CMem::Allocate) char[CMem::Alignment] };	// allocate protected memory
+	std::strncpy(password.get(),
+		     "Correct Horse Battery Staple",
+		     CMem::Alignment);							// copy password into it
+	CMem::access<CMemAcc::Read>(password);						// set read-only access to password
+	std::string			pw		{ password.get() };
+	CMem::access<CMemAcc::None>(password);						// set no access to password
+	CSalt<COp::PwHash>		secretPwSalt {					// initialize salt for password hash
+	    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+	    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+	    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+	    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
 	};
-	Crypto::SizedHash<Crypto::Operation::PwHash, Crypto::SecretKey<Crypto::Operation::SecretBox>::Size>
-							secretPwHash { secretPwSalt, pw };
-	Crypto::SecretKey<Crypto::Operation::SecretBox>	secretKey { secretPwHash };
-	Crypto::Nonce<Crypto::Operation::SecretBox> 	secretSealNonce { Crypto::Tag::GenerateConstant };
-	Crypto::Nonce<Crypto::Operation::SecretBox>	secretOpenNonce { secretSealNonce };
-	Crypto::BoxSealer<Crypto::Operation::SecretBox>	secretBoxSeal { secretKey, secretSealNonce };
-	Crypto::BoxOpener<Crypto::Operation::SecretBox>	secretBoxOpen { secretKey, secretOpenNonce };
-	std::cout << '\"' << text << "\" -> ";
-	cypher= secretBoxSeal(text);
-	cypher= Crypto::Encode::binToZ85(cypher);
-	std::cout << '\"' << cypher << "\" -> ";
-	cypher= Crypto::Encode::z85ToBin(cypher);
-	text= secretBoxOpen(cypher);
+	CSzHash<COp::PwHash, CSecKey<COp::SecretBox>::Size>
+					secretPwHash 	{ secretPwSalt, pw };		// create salted password hash sized
+	CSecKey<COp::SecretBox>		secretKey 	{ secretPwHash };		// to initialize a SecretKey
+	CNonce<COp::SecretBox> 		secretSealNonce	{ CTag::GenerateConstant };	// generate sender Nonce
+	CNonce<COp::SecretBox>		secretOpenNonce	{ secretSealNonce };		// copy sender Nonce to receiver
+	CBoxSealer<COp::SecretBox>	secretBoxSeal	{ secretKey, secretSealNonce };	// sender boxer
+	CBoxOpener<COp::SecretBox>	secretBoxOpen	{ secretKey, secretOpenNonce };	// receiver unboxer
+	std::cout << "Secret boxing \""
+		  << text << "\" -> ";
+	cypher= CEnc::binToZ85(secretBoxSeal(text));					// sender box
+	std::cout << '\"' << cypher << "\"\n"
+		  << "Secret unboxing \""
+		  << cypher << "\" -> ";
+	text= secretBoxOpen(CEnc::z85ToBin(cypher));					// receiver unbox
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
 
 	// Streaming with Diffie Hellman shared secret key.
-	Crypto::KeyPair<Crypto::Operation::DiffieHellman> streamSealKeys { Crypto::Tag::Generate };
-	Crypto::KeyPair<Crypto::Operation::DiffieHellman> streamOpenKeys { Crypto::Tag::Generate };
- 	Crypto::DiffieHellman<Crypto::Operation::DiffieHellman> streamSealSecret { streamOpenKeys.publicKey, streamSealKeys,
- 										   Crypto::Tag::Sealer };
- 	Crypto::DiffieHellman<Crypto::Operation::DiffieHellman> streamOpenSecret { streamSealKeys.publicKey, streamOpenKeys };
- 	// Test with large nonce sequential size.
-	Crypto::Nonce<Crypto::Operation::Stream, 12> 	streamSealNonce { Crypto::Tag::GenerateConstant };
-	streamSealNonce(true);
-	Crypto::Nonce<Crypto::Operation::Stream, 12> 	streamOpenNonce { streamSealNonce };
+	CKeyPair<COp::DiffieHellman>	streamSealKeys	{ CTag::Generate };		// generate sender KeyPair
+	CKeyPair<COp::DiffieHellman>	streamOpenKeys	{ CTag::Generate };		// generate receiver KeyPair
+ 	CDifHel<COp::DiffieHellman>	streamSealSecret{ streamOpenKeys.publicKey,
+ 							  streamSealKeys, CTag::Sealer };	// compute secret for sender
+ 	CDifHel<COp::DiffieHellman>	streamOpenSecret{ streamSealKeys.publicKey,
+ 							  streamOpenKeys };		// compute secret for receiver
+ 	// Test with large Nonce sequential size.
+	CNonce<COp::Stream, 12> 	streamSealNonce	{ CTag::GenerateConstant };	// generate sender Nonce
+	streamSealNonce(true);								// mark sender Nonce
+	CNonce<COp::Stream, 12> 	streamOpenNonce	{ streamSealNonce };		// copy sender Nonce to receiver
 	// Stream with very short pad to test pad updating.
-	Crypto::Streamer<Crypto::Operation::Stream, 5, 12> streamSeal { streamSealSecret, streamSealNonce };
-	Crypto::Streamer<Crypto::Operation::Stream, 5, 12> streamOpen { streamOpenSecret, streamOpenNonce };
-	std::cout << '\"' << text << "\" -> ";
-	streamSeal(text);
-	text= Crypto::Encode::binToZ85(text);
-	std::cout << '\"' << text << "\" -> ";
-	text= Crypto::Encode::z85ToBin(text);
-	streamOpen(text);
+	CStreamer<COp::Stream, 5, 12>	streamSeal	{ streamSealSecret,
+							  streamSealNonce };		// initialize sender stream
+	CStreamer<COp::Stream, 5, 12>	streamOpen	{ streamOpenSecret,
+							  streamOpenNonce };		// initialize receiver stream.
+	std::cout << "Encrypting stream \""
+		  << text << "\" -> ";
+	streamSeal(text);								// encrypt stream
+	text= CEnc::binToZ85(text);
+	std::cout << '\"' << text << "\"\n"
+		  << "Decrypting stream \""
+		  << text << "\" -> ";
+	text= CEnc::z85ToBin(text);
+	streamOpen(text);								// decrypt stream
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
 
@@ -122,71 +203,89 @@ int main(int, char* argv[])
 	if(!Crypto::Operation_AuthEncAdDataAes256Gcm_Available())
 	    std::cout << "n\'t";
 	std::cout << " available.\n";
-	Crypto::SecretKey<Crypto::Operation::AuthEncAdData> aeadKey { Crypto::Tag::Generate };
-	Crypto::Nonce<Crypto::Operation::AuthEncAdData> aeadSealNonce { Crypto::Tag::GenerateConstant };
-	Crypto::Nonce<Crypto::Operation::AuthEncAdData> aeadOpenNonce { aeadSealNonce };
-	Crypto::AuthEncAdDataSealer<Crypto::Operation::AuthEncAdData> aeadSeal { aeadKey, aeadSealNonce };
-	Crypto::AuthEncAdDataOpener<Crypto::Operation::AuthEncAdData> aeadOpen { aeadKey, aeadOpenNonce };
-	Crypto::Memory::access<Crypto::Memory::Access::Read>(password);
+	CSecKey<COp::AuthEncAdData>	aeadKey		{ CTag::Generate };		// generate SecretKey
+	CNonce<COp::AuthEncAdData>	aeadSealNonce	{ CTag::GenerateConstant };	// generate sender Nonce
+	CNonce<COp::AuthEncAdData>	aeadOpenNonce	{ aeadSealNonce };		// copy sender Nonce to receiver
+	CAeadSealer<COp::AuthEncAdData>	aeadSeal	{ aeadKey, aeadSealNonce };	// initialize sender encryption
+	CAeadOpener<COp::AuthEncAdData>	aeadOpen	{ aeadKey, aeadOpenNonce };	// initialize receiver decryption
+	CMem::access<CMemAcc::Read>(password);
 	pw= password.get();
-	Crypto::Memory::access<Crypto::Memory::Access::None>(password);
-	std::cout << '\"' << text << "\" + \"" << pw << "\" -> ";
-	cypher= Crypto::Encode::binToZ85(aeadSeal(text, pw));
-	std::cout << '\"' << cypher << "\" -> ";
-	text= aeadOpen(Crypto::Encode::z85ToBin(cypher), pw);
+	CMem::access<CMemAcc::None>(password);
+	std::cout << "Encrypting stream + data \""
+		  << text << "\" + \"" << pw << "\" -> ";
+	cypher= CEnc::binToZ85(aeadSeal(text, pw));					// encrypt
+	std::cout << '\"' << cypher << "\"\n"
+		  << "Decrypting stream + data \""
+		  << cypher  << "\" + \"" << pw << "\" -> ";
+	text= aeadOpen(CEnc::z85ToBin(cypher), pw);					// decrypt
 	pw.clear();
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
 
 	// Short hashing with Z85 encoding.
-	Crypto::SecretKey<Crypto::Operation::ShortHash>	hashKey {
-	    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+	CSecKey<COp::ShortHash>		hashKey {					// initialize SecretKey
+	    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+	    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 	};
-	Crypto::Hash<Crypto::Operation::ShortHash>	hash { hashKey, text };
-	cypher= Crypto::Encode::smartBinToZ85<Crypto::Hash<Crypto::Operation::ShortHash>::Size>(hash.begin(), hash.end());
-	std::cout << "#\"" << cypher << "\"\n";
-	Crypto::Hash<Crypto::Operation::ShortHash>	inHash;
-	Crypto::Encode::smartZ85ToBin<Crypto::Hash<Crypto::Operation::ShortHash>::Size>(cypher, inHash.begin(), inHash.end());
+	CHash<COp::ShortHash>		hash		{ hashKey, text };		// hash text
+	cypher= CEnc::smartBinToZ85<CHash<COp::ShortHash>::Size>(hash.begin(),
+								 hash.end());		// encode
+	std::cout << "ShortHash \"" << text
+		  << "\" = \"" << cypher << "\"\n";
+	CHash<COp::ShortHash>		inHash;
+	CEnc::smartZ85ToBin<CHash<COp::ShortHash>::Size>(cypher, inHash.begin(),
+							 inHash.end());			// decode straight into object
 	if(hash != inHash)
-	    throw "Hashing or encoding error";
+	    throw "encoding error!";
 
 	// More Z85 encoding.
-	unsigned char field[] { "01234567890123456789" };
-	std::cout << '\"' << field << "\" -> ";
-	cypher= Crypto::Encode::smartBinToZ85<sizeof(field)>(field, sizeof(field));
-	std::cout << '\"' << cypher << "\" -> ";
-	Crypto::Encode::smartZ85ToBin<sizeof(field)>(cypher, field, field + sizeof(field));
-	std::cout << '\"' << field << "\"\n";
+	unsigned char 			field[]		{ "01234567890123456789" };
+	cypher= CEnc::smartBinToZ85<sizeof(field)>(field, sizeof(field));		// encode
+	CEnc::smartZ85ToBin<sizeof(field)>(cypher, field, field + sizeof(field));	// decode straight into array
 
 	// Generic hashing with multi-part builder.
-	Crypto::SizedSecretKey<Crypto::Operation::GenericHash, sizeof(field)> genHashKey { field };
-	Crypto::SizedHash<Crypto::Operation::GenericHash, 24>::Builder genHashBuild { genHashKey };
-	Crypto::Memory::access<Crypto::Memory::Access::Read>(password);
+	CSzSecKey<COp::GenericHash, sizeof(field)>
+					genHashKey	{ field };			// hash array into SizedSecretKey
+	CSzHash<COp::GenericHash, 24>::Builder
+					genHashBuild	{ genHashKey };			// initialize builder with SizedSecretKey
+	CMem::access<CMemAcc::Read>(password);
 	pw= password.get();
-	Crypto::Memory::access<Crypto::Memory::Access::None>(password);
-	genHashBuild(text)(cypher)(pw);
-	std::cout << '\"' << text << "\" + \"" << cypher << "\" + \"" << pw << "\" = ";
+	CMem::access<CMemAcc::None>(password);
+	genHashBuild(text)(cypher)(pw);							// hash 3 pieces of data
+	std::cout << "Hashing (multi-part) \"" << text << "\" + \""
+		  << cypher << "\" + \"" << pw << "\" = ";
 	pw.clear();
-	Crypto::SizedHash<Crypto::Operation::GenericHash, 24> genHash { genHashBuild };
-	cypher= Crypto::Encode::smartBinToZ85<genHash.Size>(genHash.begin(), genHash.end());
-	std::cout << "#\"" << cypher << "\"\n";
+	CSzHash<COp::GenericHash, 24>	genHash		{ genHashBuild };
+	cypher= CEnc::smartBinToZ85<genHash.Size>(genHash.begin(), genHash.end());
+	std::cout << '\"' << cypher << "\"\n";
 	text+= '.';
 
 	// Password hashing.
-	Crypto::Memory::access<Crypto::Memory::Access::Read>(password);
+	CMem::access<CMemAcc::Read>(password);
 	pw= password.get();
-	Crypto::Memory::access<Crypto::Memory::Access::None>(password);
-	std::cout << '\"' << pw << "\" -> " << std::flush;
-	Crypto::Hash<Crypto::Operation::PwHash> 	checkPassword { pw };
-	std::cout << "#\"" << checkPassword << '\"' << std::endl;
-	Crypto::Memory::access<Crypto::Memory::Access::Read>(password);
+	CMem::access<CMemAcc::None>(password);
+	std::cout << "Hashing password \""
+		  << pw << "\" -> " << std::flush;
+	CHash<COp::PwHash> 		checkPassword	{ pw };				// generate password hash
+	std::cout << '\"' << checkPassword
+		  << '\"' << std::endl;
+	CMem::access<CMemAcc::Read>(password);
 	pw= password.get();
-	Crypto::Memory::access<Crypto::Memory::Access::None>(password);
-	checkPassword(pw);
+	CMem::access<CMemAcc::None>(password);
+	std::cout << "Checking password: ";
+	try {
+	    checkPassword(pw);								// check password against hash
+	    std::cout << "password correct.\n";
+	}
+	catch(Crypto::VerificationError&)
+	{
+	    std::cout << "password incorrect!\n";
+	    throw;
+	}
 
 	std::cout << "Bye.\n";
     }
-    catch(Crypto::VerificationError& e)
+    catch(Crypto::VerificationError&)
     {
 	std::cerr << argv[0] << " verification failure\n";
 	return 1;
