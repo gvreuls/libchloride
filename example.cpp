@@ -48,7 +48,7 @@ namespace			CMem =		Crypto::Memory;
 typedef CMem::Access		CMemAcc;
 template <COp O, std::size_t S = 						COpTraits<O>::NonceDefaultSequentialSize>
 		 using		CNonce =	Crypto::Nonce<O, S>;
-template <COp O> using		PubKey =	Crypto::PublicKey<O>;
+template <COp O> using		CPubKey =	Crypto::PublicKey<O>;
 template <COp O> using 		CSalt =		Crypto::Salt<O>;
 template <COp O> using 		CSeed =		Crypto::Seed<O>;
 template <COp O> using 		CSecKey =	Crypto::SecretKey<O>;
