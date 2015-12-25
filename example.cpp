@@ -27,7 +27,7 @@
 
 #include <chloride.h>
 
-// Define shorthand aliases.
+// Define shorthand aliases:	shorthand	long type			default parameters
 typedef Crypto::Operation	COp;
 template <COp O> using		COpTraits =	Crypto::OperationTraits<O>;
 template <COp O> using 		CAuth =		Crypto::Authenticator<O>;
@@ -53,7 +53,7 @@ template <COp O> using 		CSalt =		Crypto::Salt<O>;
 template <COp O> using 		CSeed =		Crypto::Seed<O>;
 template <COp O> using 		CSecKey =	Crypto::SecretKey<O>;
 template <COp O> using 		CSign =		Crypto::Signature<O>;
-template <COp O, std::size_t S = 		Crypto::StreamerDefaultPadSize,
+template <COp O, std::size_t S = 						Crypto::StreamerDefaultPadSize,
 		 std::size_t NSS =						COpTraits<O>::NonceDefaultSequentialSize>
 		 using		CStreamer =	Crypto::Streamer<O, S, NSS>;
 template <COp O, std::size_t S>
@@ -139,7 +139,7 @@ int main(int, char* argv[])
 	text+= '.';
 
 	// Secret key boxing/unboxing protected by secure password in read-only memory.
-	std::unique_ptr<char[],CMem::Free>
+	std::unique_ptr<char[], CMem::Free>
 					password	{ new(CMem::Allocate) char[CMem::Alignment] };	// allocate protected memory
 	std::strncpy(password.get(),
 		     "Correct Horse Battery Staple",
