@@ -211,11 +211,11 @@ int main(int, char* argv[])
 	CMem::access<CMemAcc::Read>(password);
 	pw= password.get();
 	CMem::access<CMemAcc::None>(password);
-	std::cout << "Encrypting stream + data \""
+	std::cout << "Encrypting secret + data \""
 		  << text << "\" + \"" << pw << "\" -> ";
 	cypher= CEnc::binToZ85(aeadSeal(text, pw));					// encrypt
 	std::cout << '\"' << cypher << "\"\n"
-		  << "Decrypting stream + data \""
+		  << "Decrypting secret + data \""
 		  << cypher  << "\" + \"" << pw << "\" -> ";
 	text= aeadOpen(CEnc::z85ToBin(cypher), pw);					// decrypt
 	pw.clear();
