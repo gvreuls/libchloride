@@ -130,11 +130,11 @@ int main(int, char* argv[])
 							  openNonce };			// receiver unboxer
 	std::cout << "Public boxing \""
 		  << text << "\" -> ";
-	std::string 			cypher		{ CEnc::binToZ85(boxSeal(text)) };	// sender box
-	std::cout << '\"' << cypher << "\"\n"
+	std::string 			cipher		{ CEnc::binToZ85(boxSeal(text)) };	// sender box
+	std::cout << '\"' << cipher << "\"\n"
 		  << "Public unboxing \""
-		  << cypher << "\" -> ";
-	text= boxOpen(CEnc::z85ToBin(cypher));						// receiver unbox
+		  << cipher << "\" -> ";
+	text= boxOpen(CEnc::z85ToBin(cipher));						// receiver unbox
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
 
@@ -162,11 +162,11 @@ int main(int, char* argv[])
 	CBoxOpener<COp::SecretBox>	secretBoxOpen	{ secretKey, secretOpenNonce };	// receiver unboxer
 	std::cout << "Secret boxing \""
 		  << text << "\" -> ";
-	cypher= CEnc::binToZ85(secretBoxSeal(text));					// sender box
-	std::cout << '\"' << cypher << "\"\n"
+	cipher= CEnc::binToZ85(secretBoxSeal(text));					// sender box
+	std::cout << '\"' << cipher << "\"\n"
 		  << "Secret unboxing \""
-		  << cypher << "\" -> ";
-	text= secretBoxOpen(CEnc::z85ToBin(cypher));					// receiver unbox
+		  << cipher << "\" -> ";
+	text= secretBoxOpen(CEnc::z85ToBin(cipher));					// receiver unbox
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
 
@@ -213,11 +213,11 @@ int main(int, char* argv[])
 	CMem::access<CMemAcc::None>(password);
 	std::cout << "Encrypting secret + data \""
 		  << text << "\" + \"" << pw << "\" -> ";
-	cypher= CEnc::binToZ85(aeadSeal(text, pw));					// encrypt
-	std::cout << '\"' << cypher << "\"\n"
+	cipher= CEnc::binToZ85(aeadSeal(text, pw));					// encrypt
+	std::cout << '\"' << cipher << "\"\n"
 		  << "Decrypting secret + data \""
-		  << cypher  << "\" + \"" << pw << "\" -> ";
-	text= aeadOpen(CEnc::z85ToBin(cypher), pw);					// decrypt
+		  << cipher  << "\" + \"" << pw << "\" -> ";
+	text= aeadOpen(CEnc::z85ToBin(cipher), pw);					// decrypt
 	pw.clear();
 	std::cout << '\"' << text << "\"\n";
 	text+= '.';
@@ -228,20 +228,20 @@ int main(int, char* argv[])
 	    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 	};
 	CHash<COp::ShortHash>		hash		{ hashKey, text };		// hash text
-	cypher= CEnc::smartBinToZ85<CHash<COp::ShortHash>::Size>(hash.begin(),
+	cipher= CEnc::smartBinToZ85<CHash<COp::ShortHash>::Size>(hash.begin(),
 								 hash.end());		// encode
 	std::cout << "ShortHash \"" << text
-		  << "\" = \"" << cypher << "\"\n";
+		  << "\" = \"" << cipher << "\"\n";
 	CHash<COp::ShortHash>		inHash;
-	CEnc::smartZ85ToBin<CHash<COp::ShortHash>::Size>(cypher, inHash.begin(),
+	CEnc::smartZ85ToBin<CHash<COp::ShortHash>::Size>(cipher, inHash.begin(),
 							 inHash.end());			// decode straight into object
 	if(hash != inHash)
 	    throw "encoding error!";
 
 	// More Z85 encoding.
 	unsigned char 			field[]		{ "01234567890123456789" };
-	cypher= CEnc::smartBinToZ85<sizeof(field)>(field, sizeof(field));		// encode
-	CEnc::smartZ85ToBin<sizeof(field)>(cypher, field, field + sizeof(field));	// decode straight into array
+	cipher= CEnc::smartBinToZ85<sizeof(field)>(field, sizeof(field));		// encode
+	CEnc::smartZ85ToBin<sizeof(field)>(cipher, field, field + sizeof(field));	// decode straight into array
 
 	// Generic hashing with multi-part builder.
 	CSzSecKey<COp::GenericHash, sizeof(field)>
@@ -251,13 +251,13 @@ int main(int, char* argv[])
 	CMem::access<CMemAcc::Read>(password);
 	pw= password.get();
 	CMem::access<CMemAcc::None>(password);
-	genHashBuild(text)(cypher)(pw);							// hash 3 pieces of data
+	genHashBuild(text)(cipher)(pw);							// hash 3 pieces of data
 	std::cout << "Hashing (multi-part) \"" << text << "\" + \""
-		  << cypher << "\" + \"" << pw << "\" = ";
+		  << cipher << "\" + \"" << pw << "\" = ";
 	pw.clear();
 	CSzHash<COp::GenericHash, 24>	genHash		{ genHashBuild };
-	cypher= CEnc::smartBinToZ85<genHash.Size>(genHash.begin(), genHash.end());
-	std::cout << '\"' << cypher << "\"\n";
+	cipher= CEnc::smartBinToZ85<genHash.Size>(genHash.begin(), genHash.end());
+	std::cout << '\"' << cipher << "\"\n";
 	text+= '.';
 
 	// Password hashing.
