@@ -23,11 +23,11 @@ USAGE
 Include the header file chloride.h in your source code and link your
 executables with -lchloride or -lchloride-debug (and -lsodium).
 
-There is an example.cpp source file include in the project package
+There is an example.cpp source file included in the project package
 which demonstrates the library's core features. You can compile this
 example with:
 make example DEBUG=1
-(You don't have to install the library to compile the example.)
+(You don't need to install the library to compile the example.)
 
 NOTES
 
