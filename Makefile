@@ -83,7 +83,7 @@ version:=$(version_major).$(version_minor).$(version_revision)
 mdistdir:=lib$(TARGETNAME)-$(version)
 distribution:=$(mdistdir).tar.gz
 distfiles:=$(BASEHEADERS) $(INCLUDEDIR) $(SOURCEDIR) $(AUXFILES)
-nondistfiles:=$(INCLUDEDIR)/.gitignore $(VERSIONHEADER)
+nondistfiles:=$(VERSIONHEADER)
 
 NONDEPGOALS=clean depclean realclean distclean install uninstall
 
