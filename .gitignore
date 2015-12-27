@@ -6,3 +6,4 @@
 /example
 /libchloride-*/
 /libchloride-*.tar.gz
+/chloride/version.h
