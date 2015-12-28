@@ -67,7 +67,7 @@ public:
     }
     template <typename I> Nonce(I begin_, I end_, Tag::SpecifyConstantTag)
     {
-	if(end_ - begin_ != ConstantSize)
+	if(static_cast<std::size_t>(end_ - begin_) != ConstantSize)
 	    throw Exception(Exception::SizeMsg);
 	std::copy(begin_, end_, constantBegin());
 	::sodium_memzero(sequentialBegin(), SequentialSize);
