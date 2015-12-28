@@ -77,7 +77,7 @@ mandir:=$(prefixdir)/man
 
 version_major=0
 version_minor=1
-version_revision=0
+version_revision=1
 version:=$(version_major).$(version_minor).$(version_revision)
 
 mdistdir:=lib$(TARGETNAME)-$(version)
