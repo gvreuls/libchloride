@@ -174,7 +174,7 @@ public:
 
     NonceType&						nonce;
 
-    AuthEncAdDataSealer(const SecretKeyBaseType& sk_, NonceType& n_) noexcept
+    AuthEncAdDataSealer(const SecretKeyBaseType& sk_, NonceType& n_)
 	: nonce		{ n_ }
     {
 	if(::sodium_mlock(_state, sizeof(::crypto_aead_aes256gcm_state)))
@@ -290,7 +290,7 @@ public:
 
     NonceType&						nonce;
 
-    AuthEncAdDataOpener(const SecretKeyBaseType& sk_, NonceType& n_) noexcept
+    AuthEncAdDataOpener(const SecretKeyBaseType& sk_, NonceType& n_)
 	: nonce		{ n_ }
     {
 	if(::sodium_mlock(_state, sizeof(::crypto_aead_aes256gcm_state)))
