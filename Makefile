@@ -157,10 +157,10 @@ example: example.cpp $(ARCHIVE)
 
 ifdef MAKECMDGOALS
 ifneq ($(filter-out $(NONDEPGOALS),$(MAKECMDGOALS)),)
--include $(DEPS)
+-include $(wildcard $(DEPS))
 endif
 else
--include $(DEPS)
+-include $(wildcard $(DEPS))
 endif
 
 %.o: override CPPFLAGS+=-MMD
